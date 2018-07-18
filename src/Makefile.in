@@ -1,0 +1,115 @@
+################# configure part ##############################
+CC = @CC@
+CXX = @CXX@
+UIC = @UIC@
+MOC = moc
+srcdir = @srcdir@
+SHELL = @SHELL@
+PREFIX = @prefix@
+prefix = @prefix@
+exec_prefix = @exec_prefix@
+bindir = @bindir@
+
+CFLAGS = @CFLAGS@
+CXXFLAGS = @CXXFLAGS@ 
+LDFLAGS = @LDFLAGS@ @QT4_GUI_LIBS@ 
+
+IFLAGS = -I. @QT4_GUI_CFLAGS@ -I/usr/include/qt4/QtSolutions -DPREFIX=\"${PREFIX}\"
+
+CLIPVIEWER := clip-viewer
+CLIPVIEWER_MOC =	clipviewer.moc.cpp
+CLIPVIEWER_SRC =	clipviewer.cpp	\
+			main.cpp \
+			icons.cpp \
+			$(CLIPVIEWER_MOC)
+
+EXES := ${CLIPVIEWER}
+
+.PHONY: all build install uninstall clean mrproper
+
+all: build
+
+###############################################################
+ifndef VERBOSE
+MAKEFLAGS += -s --no-print-directory
+ECHO = echo
+else 
+ECHO = echo > /dev/null
+endif
+
+OBJS_DIR ?= obj
+CLIPVIEWER_OBJFILES := ${foreach file, ${patsubst %.cpp,%.o,${CLIPVIEWER_SRC}}, ${OBJS_DIR}/${file}}
+
+DEPS_DIR = ${OBJS_DIR}/.deps
+CLIPVIEWER_DEPFILES := ${foreach file, ${basename ${CLIPVIEWER_SRC}}, ${DEPS_DIR}/${file}.d}
+
+OBJFILES := ${CLIPVIEWER_OBJFILES} 
+DEPFILES := ${CLIPVIEWER_DEPFILES}
+MOCFILES := ${CLIPVIEWER_MOC}
+
+###############################################################
+
+${OBJS_DIR}:
+	mkdir -p ${OBJS_DIR}
+
+${DEPS_DIR}:
+	mkdir -p ${DEPS_DIR}
+
+
+${OBJS_DIR}/%.o:%.c Makefile
+	@${ECHO} "        CC        $<"
+	$(CC) $(CFLAGS) $(IFLAGS) -MT $@ -MD -MP -MF ${DEPS_DIR}/$*.d -c -o $@ $<
+
+${OBJS_DIR}/%.o:%.cpp Makefile
+	@${ECHO} "        CXX      $<"
+	$(CXX) $(CXXFLAGS) $(IFLAGS) -MT $@ -MD -MP -MF ${DEPS_DIR}/$*.d -c -o $@ $<
+
+icons.cpp: icons.qrc \
+		icons/close.png \
+		icons/backward.png \
+		icons/exit.png \
+		icons/find.png \
+		icons/forward.png \
+		icons/zoom-in.png \
+		icons/zoom-out.png 
+	@${ECHO} "        RCC      $@"
+	rcc -name icons icons.qrc -o icons.cpp
+
+
+%.moc.cpp: %.h Makefile
+	@${ECHO} "  MOC       $<"
+	$(MOC) -o $@ $<
+
+
+${CLIPVIEWER}: ${CLIPVIEWER_OBJFILES}
+	@${ECHO} "        LD       $@"
+	$(CXX) $(CXXFLAGS) -o $@ $^ $(LDFLAGS)
+
+build: ${OBJS_DIR} ${DEPS_DIR} ${MOCFILES} ${EXES}
+
+install: build
+	list='$(EXES)'; for exe in $$list; do \
+		${ECHO} "        INST              ${DESTDIR}${bindir}/$$exe" ;\
+		install -D $$exe ${DESTDIR}${bindir}/$$exe ;\
+	done
+
+uninstall: 
+	list='$(EXES)'; for exe in $$list; do \
+		${ECHO} "        RM                ${DESTDIR}${bindir}/$$exe" ;\
+		rm -f  ${DESTDIR}${bindir}/$$exe ;\
+	done
+
+clean:
+	@${ECHO} "        CLEAN             ${EXES} ${MOCFILES} ${OBJFILES}"
+	rm -f ${EXES} ${MOCFILES} ${OBJFILES} ${DEPFILES} icons.cpp
+
+mrproper: clean
+	rmdir ${DEPS_DIR} ${OBJS_DIR}
+	rm -f Makefile
+
+
+Makefile: Makefile.in ../config.status
+	cd .. && ./config.status && cd src
+
+
+-include ${DEPFILES}

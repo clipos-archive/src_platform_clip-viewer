@@ -1,0 +1,11 @@
+<!DOCTYPE RCC><RCC version="1.0">
+<qresource prefix="/">
+    <file>icons/backward.png</file>
+    <file>icons/close.png</file>
+    <file>icons/exit.png</file>
+    <file>icons/find.png</file>
+    <file>icons/forward.png</file>
+    <file>icons/zoom-in.png</file>
+    <file>icons/zoom-out.png</file>
+</qresource>
+</RCC>

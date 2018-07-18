@@ -1,0 +1,26 @@
+# CLIP ChangeLog for app-clip/clip-viewer
+
+*clip-viewer-1.0.3 (04 Nov 2010)
+
+  04 Nov 2010; Vincent Strubel <clipos@ssi.gouv.fr>
+  +clip-viewer-1.0.3.ebuild, -clip-viewer-1.0.2.ebuild:
+  Fix window height for netbooks.
+
+*clip-viewer-1.0.2 (04 Jun 2010)
+
+  04 Jun 2010; Vincent Strubel <clipos@ssi.gouv.fr>
+  +clip-viewer-1.0.2.ebuild, -clip-viewer-1.0.1.ebuild:
+  Widen the window a bit.
+
+*clip-viewer-1.0.1 (01 Jun 2010)
+
+  01 Jun 2010; Vincent Strubel <clipos@ssi.gouv.fr>
+  +clip-viewer-1.0.1.ebuild, -clip-viewer-1.0.ebuild:
+  Add support for tail mode.
+
+*clip-viewer-1.0 (31 May 2010)
+
+  31 May 2010; Vincent Strubel <clipos@ssi.gouv.fr>
+  +clip-viewer-1.0.ebuild:
+  Initial import - text/html viewer for CLIP.
+
